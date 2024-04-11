@@ -8,15 +8,15 @@ If a position in the isolate's sequence matches exactly with that
 of the reference or it does not exist ("X"), then the final sheet has an
 "X" placed there.
 
-In the event of a mutation, the original letter in the reference sequence
-is written then the position where the mutation happened is included and
-then the mutation itself is written. So, say in the reference, at position
-1, a "V" exists, but in the isolate's sequence, a "P" exists instead, it is
-recorded as "V1P".
+In the event of a mutation, the original nucleotide in the reference sequence,
+then the position where the mutation happened, as well as the mutation itself
+are written into the excel sheet corresponding to its Isolate ID. So, say in
+the reference, at position 1, a "V" exists, but in the isolate's sequence, a "P"
+exists instead, it is recorded as "V1P".
 
 ## Technologies
 
-The project is created with:
+The project was created with:
 
 - Python: 3.11.5
 - biopython 1.83
