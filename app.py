@@ -23,7 +23,7 @@ def run():
 
             if choice == 1:
                 print("\nCreating new workbook...")
-                workbook = spreadsheet_utils.create_workbook()
+                workbook, sheet = spreadsheet_utils.create_workbook()
                 print("Workbook created!")
 
                 print(
@@ -44,51 +44,55 @@ def run():
                 ref_id = input("Enter your reference sequence ID: ")
                 file_name = input("Output excel file name (DO NOT ADD AN EXTENSION): ")
 
-                print("\nExtracting gene names as header columns...")
+                print("\nExtracting protein names as header columns...")
                 try:
-                    gene_names = spreadsheet_utils.extract_gene_name_from_file(
-                        protein_alignments_path, extension
+                    protein_names = spreadsheet_utils.extract_gene_name_from_file(
+                        protein_alignments_path
                     )
                 except FileNotFoundError:
                     print(f"No such file or directory: '{protein_alignments_path}'")
                     protein_alignments_path = input(
                         "Kindly enter the right file or directory: "
                     )
-                    gene_names = spreadsheet_utils.extract_gene_name_from_file(
+                    protein_names = spreadsheet_utils.extract_gene_name_from_file(
                         protein_alignments_path, extension
                     )
 
-                if gene_names:
-                    print(
-                        "\nParse the MSA and make comparisons of aligned sequences..."
-                    )
-                    if not extension:
-                        results = compare_aligned_sequences.parse_msa(
-                            protein_alignments_path, workbook, ref_id, gene_names
-                        )
-                    else:
-                        results = compare_aligned_sequences.parse_msa(
+                if extension:
+                    mutation_finder = (
+                        compare_aligned_sequences.MultiFastaMutationsFinder(
                             protein_alignments_path,
-                            workbook,
+                            sheet,
                             ref_id,
-                            gene_names,
+                            protein_names,
                             extension,
                         )
-
-                if results:
-                    # Delete first sheet. It'll always be empty
-                    del workbook["Sheet"]
-                    # Save to spreadsheet
-                    spreadsheet_utils.save_worksheet(workbook, file_name + ".xlsx")
-                    print("\nExiting...")
-                    break
+                    )
                 else:
-                    print("Oops! Something went wrong somewhere!")
-                    sys.exit(1)
+                    mutation_finder = (
+                        compare_aligned_sequences.MultiFastaMutationsFinder(
+                            protein_alignments_path,
+                            sheet,
+                            ref_id,
+                            protein_names,
+                            ".mfa",
+                        )
+                    )
+
+                print("Processing Multi Fasta Alignment file...")
+                mutation_finder.process_fasta_file()
+                print("Inserting headers and Isolate IDs to excel...")
+                mutation_finder.insert_ids_to_excel()
+                print("Inserting data to excel sheet...")
+                mutation_finder.insert_to_excel()
+
+                # Save to spreadsheet
+                spreadsheet_utils.save_worksheet(workbook, file_name + ".xlsx")
+                print("\nExiting...")
+                sys.exit(0)
             else:
                 print("\nYour choice is not among the options listed.")
                 print("Enter a choice in the options listed below.\n")
-
         except ValueError:
             print("\nError: Invalid input. Please enter an integer.\n")
 
