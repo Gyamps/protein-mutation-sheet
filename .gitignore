@@ -1,8 +1,8 @@
 # Repo stuff
 *.xlsx
-./bash_scripts/MTBC_fastafiles
-./bash_scripts/protein_fastafiles
-./bash_scripts/test/test_sh.sh
+/bash_scripts/MTBC_fastafiles
+/bash_scripts/protein_fastafiles/
+/bash_scripts/test/test_sh.sh
 
 /.vscode
 .vscode/*
