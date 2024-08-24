@@ -3,6 +3,7 @@
     """
 
 import os
+import pandas as pd
 from openpyxl import Workbook, load_workbook
 
 
@@ -23,7 +24,8 @@ def save_worksheet(workbook: Workbook, filename: str):
 
     Args:
         workbook (Workbook): Workbook object to invoke save method
-        filename (str): Name to save file as. Specify path to save at particular place
+        filename (str): Name to save the output file as.
+        Specify a path to save at a particular place
     """
     workbook.save(filename)
 
@@ -35,9 +37,7 @@ def extract_gene_name_from_file(path: str, extension: str = ".mfa"):
     Args:
         path (str): The directory where the protein files reside
         extension (str, optional): The extension of the multiple alignment files.
-                                Defaults to '.mfa'
-        first_column_name (str, optional): The name of the first column in the sheet.
-                                Defaults to ''.
+                                Default to '.mfa'
     """
     filenames = []
     for filename in os.listdir(path):
@@ -54,17 +54,18 @@ def insert_headers_to_excel(header, sheet, start_col=1):
 
 
 def insert_data_to_excel(mutations: str, sheet, start_row: int, start_col: int):
-    """Insert compared sequences into sheet.
+    """Insert compared sequences into the sheet.
     The compared sequences will normally arrive as a list of tuples
     from the compared_aligned_sequences function, which returns the
     sequence ID and the compared sequences.
 
     Args:
-        workbook (Workbook): An instance of OpenpyXL workbook.
         mutations (list): A list of tuples of compared sequences.
         sheet (Workbook child): The sheet in question.
-        start_row (int, optional): The row from which to start writing to. Defaults to 1.
-        start_col (int, optional): The column to start writing to. Defaults to 1.
+        start_row (int, optional): The row from which to start writing to.
+        Default to 1.
+        start_col (int, optional): The column to start writing to.
+        Default to 1.
     """
     # Write mutation to sheet cell.
     sheet.cell(row=2 + start_row, column=2 + start_col).value = mutations
@@ -91,3 +92,9 @@ def insert_data_to_specific_row():
         worksheet.cell(row=insert_row, column=col_idx + 1).value = (
             value  # Adjust column number as needed
         )
+
+def excel_to_csv(excel_file, sheet_name):
+    df = pd.read_excel(excel_file, sheet_name=sheet_name)
+    base_filename = os.path.splitext(excel_file)[0]
+    csv_file = base_filename + '.csv'
+    df.to_csv(csv_file, index=False)
