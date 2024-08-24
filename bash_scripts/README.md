@@ -12,7 +12,7 @@ how the output is supposed to be like from earlier, so here's a screen-recording
 that below:
 
 ![A Multi-FASTA file containing sequences of amino acids that translate to the
-katG protein](https://github.com/Gyamps/protein-mutation-sheet/raw/main/bash_scripts/images/protein_mfa.gif)
+katG protein](./images/protein_mfa_lower.gif)
 
 So the screen-recording above is the sequence of _amino acids_ that encode for
 the **katG protein** in _M. Tuberculosis_. The isolates that were sequenced have
