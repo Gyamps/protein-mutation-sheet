@@ -29,7 +29,7 @@ cd "protein_fastafiles" || exit "$ERR_CD"
 # It discards the all data written to it and hence the output
 # from "command -v ..." is discard/disappears.
 # shellcheck disable=SC2073
-if [ "$(command -v hlol)" > /dev/null ] && \
+if [ "$(command -v extractseq)" > /dev/null ] && \
     [ "$(command -v revseq)" > /dev/null ] && \
     [ "$(command -v transeq)" > /dev/null ];
 then
