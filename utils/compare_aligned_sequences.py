@@ -34,7 +34,7 @@ class MultiFastaMutationsFinder:
         """
         self.path = path
         self.sheet = sheet
-        self.ref_id = ["H37Rv", "CDC1551", "F11", "H37Ra", "Erdman", "HN878", "KZN 1435"]
+        self.ref_ids = ["H37Rv", "CDC1551", "F11", "H37Ra", "Erdman", "HN878", "KZN 1435"]
         self.protein_names = protein_names
         self.extension = extension
         self.id_mutations = OrderedDict()
@@ -46,26 +46,36 @@ class MultiFastaMutationsFinder:
         """
         for protein in self.protein_names:
             file = os.path.join(self.path, protein + self.extension)
-            if file.endswith(self.extension):
-                with open(file, "r", encoding="utf-8") as handle:
-                    id_sequences_dict = OrderedDict()
-                    for record in SeqIO.parse(handle, "fasta"):
-                        id_sequences_dict[record.id] = record.seq
+            with open(file, "r", encoding="utf-8") as handle:
+                id_sequences_dict = OrderedDict()
+                for record in SeqIO.parse(handle, "fasta"):
+                    id_sequences_dict[record.id] = record.seq
 
-                print(f"Comparing Aligned Sequences for mutations in {protein}")
-                reference_id = self.find_reference(id_sequences_dict)
-                for record_id, record_seq in id_sequences_dict.items():
+            print(f"Comparing Aligned Sequences for mutations in {protein}")
+
+            # Retrieve the reference sequence
+            reference_id = self.find_reference(id_sequences_dict)
+            ref_seq = id_sequences_dict.get(reference_id, "")
+
+            # Check if the reference sequence exists
+            if not ref_seq:
+                print("ERROR: Reference ID and sequence not found!\n"
+                      "Check your .mfa file for reference ID and sequence.\n"
+                      f"If not in this list {self.ref_ids}, then kindly enter it below.\n")
+
+                while not ref_seq:
+                    reference_id = input("Reference ID: ").strip()
+                    if reference_id.lower() == "exit":
+                        print("Exiting...")
+                        sys.exit()
+
                     ref_seq = id_sequences_dict.get(reference_id, "")
 
-                    if ref_seq:
-                        self.handle_protein_ids(protein, record_id, record_seq, ref_seq)
-                    else:
-                        print("Error: Reference ID and sequence not found!\n"
-                              "Check your .mfa file for reference ID and sequence.\n"
-                              f"If not in this list {self.ref_id}, then kindly enter it below.\n")
-                        reference_id = input("Reference ID: ")
-                        ref_seq = id_sequences_dict.get(reference_id, "")
-                        self.handle_protein_ids(protein, record_id, record_seq, ref_seq)
+                    if not ref_seq:
+                        print("Invalid Reference ID. Please try again or type 'exit' to quit.")
+            else:
+                for record_id, record_seq in id_sequences_dict.items():
+                    self.handle_protein_ids(protein, record_id, record_seq, ref_seq)
 
         print("Done!")
 
@@ -84,12 +94,12 @@ class MultiFastaMutationsFinder:
         """
         # Handle existing ID
         if (protein in self.id_mutations) and (
-                record_id != self.ref_id
+                record_id not in self.ref_ids
         ):
             self.compare_aligned_sequences(
                 protein, record_id, record_seq, ref_seq
             )
-        elif record_id != self.ref_id:
+        elif record_id not in self.ref_ids:
             self.id_mutations[protein] = []
             self.compare_aligned_sequences(
                 protein, record_id, record_seq, ref_seq
@@ -198,7 +208,7 @@ class MultiFastaMutationsFinder:
 
     def find_reference(self, sequence_dict) -> str | None:
         """
-        Check reference IDs in ref_id dictionary if any exist in the
+        Check reference IDs in ref_ids dictionary if any exist in the
         sequence dictionary, then return that ID.
 
         Args:
@@ -206,7 +216,7 @@ class MultiFastaMutationsFinder:
             sequences as values.
         @return: str | None
         """
-        for ref_id in self.ref_id:
+        for ref_id in self.ref_ids:
             if ref_id in sequence_dict:
                 return ref_id
         return None
