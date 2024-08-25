@@ -1,8 +1,9 @@
 import argparse, sys, os
+from termcolor import colored
 
 class ParseWithErrors(argparse.ArgumentParser):
     def error(self, message):
-        print('{0}\n\n'.format(message))
+        print(colored("ERROR", "red", "on_white", attrs=["bold"]) + " " + colored(f"{message}\n", "red"))
         self.print_help()
         sys.exit(2)
 
@@ -15,7 +16,7 @@ class ParseWithErrors(argparse.ArgumentParser):
         @return: arg
         """
         if not os.path.isfile(arg):
-            parser.error("The file %s does not exist!" % arg)
+            parser.error(f"The file {arg} does not exist!")
         else:
             return arg
 
@@ -28,7 +29,7 @@ class ParseWithErrors(argparse.ArgumentParser):
         @return: arg
         """
         if not os.path.isdir(arg):
-            parser.error("The directory does not exist!" % arg)
+            parser.error(f'The directory "{arg}" does not exist!')
         else:
             return arg
 
