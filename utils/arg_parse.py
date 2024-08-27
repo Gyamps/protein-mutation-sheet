@@ -52,3 +52,15 @@ def argparser():
                         help="output fasta file name WITHOUT extension")
 
     return parser
+
+def dr_genes_argparser():
+    description = """
+    A script to parse an aligned genomes Fasta file to
+    have its genes extracted into separate files.
+    """
+    parser = ParseWithErrors(description=description)
+    parser.add_argument("-i", "--input_fasta_file", required=True,
+                        help="input fasta file",
+                        type=lambda x: parser.is_valid_file(parser, x))
+
+    return parser
