@@ -16,8 +16,8 @@ cd "$SCRIPT_DIR" || exit "$ERR_CD"
 # from python script.
 output=$(./parse_gene_data.py)
 
-# Path to MTBC Isolate FASTA files, defaulting to "../MTBC_fastafiles/" if not provided as an argument.
-FASTA_FILES_LOC="${1:-"./MTBC_fastafiles/"}"
+# Path to the aligned sequences FASTA file (should be .mfa or .fas or any other combination).
+FASTA_FILE_LOC="${1:-"./MTBC_fastafiles/"}"
 
 # Create a directory for protein FASTA files if it doesn't exist.
 mkdir -vp "protein_fastafiles"
@@ -42,7 +42,7 @@ fi
 
 
 # Iterate through your sample's fast files (should normally be the consensus sequence)
-for FILE in "${FASTA_FILES_LOC}"*.fas; do
+for FILE in "${FASTA_FILE_LOC}"*.fas; do
     # Extract the base name of the file (name of file without extension)
     base=$(basename "$FILE" .fas)
 
